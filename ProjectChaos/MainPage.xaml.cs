@@ -83,7 +83,7 @@ namespace ProjectChaos
             CreateBalls(ballProp, gridProp);
             parm = (NoOfSplit: gridProp.NoOfSplit, CellSize: gridProp.CellSize, Speed: ballProp.Speed);
             timer?.Dispose();
-            timer = new Timer(MakeNextTurnAsync, makeTurnParm, 25, 25);
+            timer = new Timer(MakeNextTurnAsync, makeTurnParm, 50, 50);
         }
 
         (int NoOfSplit, int CellSize, int Speed) parm = (NoOfSplit: 10, CellSize: 50, Speed: 10);
@@ -99,22 +99,21 @@ namespace ProjectChaos
             {
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
                     var direction = random.NextDouble() * 360;
+                    direction = Math.PI * direction / 180.0; // Degree to radian 
                     var ballTranslate = child.RenderTransform.TransformPoint(new Point(0, 0));
                     var x = ballTranslate.X;
                     var y = ballTranslate.Y;
                     var x1 = x + (parm.Speed * Math.Cos(direction));
-                    while (x1 < 0 || x1 > (parm.CellSize * parm.NoOfSplit))
-                    {
-                        direction = random.NextDouble() * 360;
-                        x1 = x + (parm.Speed * Math.Cos(direction));
-                    }
-
                     var y1 = y + (parm.Speed * Math.Sin(direction));
-                    while (y1 < 0 || y1 > (parm.CellSize * parm.NoOfSplit))
+
+                    while (x1 < 0 || x1 > (parm.CellSize * parm.NoOfSplit) || y1 < 0 || y1 > (parm.CellSize * parm.NoOfSplit))
                     {
                         direction = random.NextDouble() * 360;
+                        direction = Math.PI * direction / 180.0; // Degree to radian 
+                        x1 = x + (parm.Speed * Math.Cos(direction));
                         y1 = y + (parm.Speed * Math.Sin(direction));
                     }
+
 
                     TranslateTransform myTranslate = new TranslateTransform();
                     myTranslate.X = x1;
@@ -169,7 +168,7 @@ namespace ProjectChaos
             var makeTurnParm = (NoOfSplit: gridProp.NoOfSplit, CellSize: gridProp.CellSize, Speed: ballProp.Speed);
             CreateBalls(ballProp, gridProp);
             parm = (NoOfSplit: gridProp.NoOfSplit, CellSize: gridProp.CellSize, Speed: ballProp.Speed);
-            timer = new Timer(MakeNextTurnAsync, makeTurnParm, 25, 25);
+            timer = new Timer(MakeNextTurnAsync, makeTurnParm, 50, 50);
         }
     }
 }
