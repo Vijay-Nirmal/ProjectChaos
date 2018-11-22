@@ -5,33 +5,122 @@
     xmlns:local="using:ProjectChaos"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
     Loaded="Page_Loaded"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Padding="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
-        </Grid.RowDefinitions>
-        <ScrollViewer ZoomMode="Enabled" ScrollViewer.HorizontalScrollMode="Auto">
-            <Grid Name="MainGrid">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid Name="GraphLinesGrid" Grid.Row="1" Grid.Column="1"/>
-                <Canvas Name="BallsCanvas" Grid.Row="1" Grid.Column="1"/>
-                <Canvas Name="YLableCanvas" Grid.Row="1"/>
-                <Canvas Name="XLableCanvas" Grid.Column="1"/>
-            </Grid>
+    <Page.Resources>
+        <Flyout x:Key="BallColorPickerFlyout">
+            <RelativePanel>
+                <ColorPicker x:Name="BallColorPicker" IsColorChannelTextInputVisible="False" IsHexInputVisible="False"/>
+
+                <Grid RelativePanel.Below="BallColorPicker" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="OK" Click="confirmColor_Click" Margin="0,12,2,0" HorizontalAlignment="Stretch"/>
+                    <Button Content="Cancel" Click="cancelColor_Click" Margin="2,12,0,0" HorizontalAlignment="Stretch" Grid.Column="1"/>
+                </Grid>
+            </RelativePanel>
+        </Flyout>
+    </Page.Resources>
+
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Orientation="Vertical" Padding="10">
+                <ScrollViewer ZoomMode="Enabled" ScrollViewer.HorizontalScrollMode="Enabled" Margin="10">
+                    <Grid Name="MainGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Name="GraphLinesGrid" Grid.Row="1" Grid.Column="1"/>
+                        <Canvas Name="BallsCanvas" Grid.Row="1" Grid.Column="1"/>
+                        <Canvas Name="YLableCanvas" Grid.Row="1"/>
+                        <Canvas Name="XLableCanvas" Grid.Column="1"/>
+                    </Grid>
+                </ScrollViewer>
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <TextBlock Text="Grid Property" FontSize="18"/>
+                    <controls:WrapPanel Orientation="Horizontal" HorizontalSpacing="20" VerticalSpacing="20">
+                        <controls:HeaderedContentControl Header="No Of Split">
+                            <TextBox Name="NoOfSplitTextBox" Width="50" Height="25" extensions:TextBoxRegex.ValidationMode="Dynamic" extensions:TextBoxRegex.ValidationType="Number"/>
+                        </controls:HeaderedContentControl>
+                        <controls:HeaderedContentControl Header="MaxValue">
+                            <TextBox Name="MaxvalueTextBox" Width="50" Height="25"/>
+                        </controls:HeaderedContentControl>
+                        <controls:HeaderedContentControl Header="CellSize">
+                            <TextBox Name="CellSizeTextBox" Width="50" Height="25"/>
+                        </controls:HeaderedContentControl>
+                        <controls:HeaderedContentControl Header="RefreshSpeed">
+                            <TextBox Name="RefreshSpeedTextBox" Width="50" Height="25"/>
+                        </controls:HeaderedContentControl>
+                    </controls:WrapPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <TextBlock Text="Ball Property" FontSize="18"/>
+                    <controls:WrapPanel Orientation="Horizontal" HorizontalSpacing="20" VerticalSpacing="20">
+                        <controls:HeaderedContentControl Header="No Of Balls In a Color">
+                            <TextBox Name="NoOfBallsInColorTextBox" Width="150" Height="25"/>
+                        </controls:HeaderedContentControl>
+                        <controls:HeaderedContentControl Header="Colors">
+                            <StackPanel Orientation="Horizontal">
+                                <ListView Name="ColorListView" ItemsSource="{x:Bind ballColorsItemSource}" Height="40">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate x:DataType="SolidColorBrush">
+                                            <Grid Width="40" Height="40" Background="{x:Bind}" BorderBrush="White" BorderThickness="2">
+                                                <SymbolIcon Name="RemnoveButton" Symbol="Delete" Tapped="RemnoveButton_Tapped"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ItemsStackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                                            <Setter Property="Margin" Value="0" />
+                                            <Setter Property="Padding" Value="0" />
+                                            <Setter Property="MinHeight" Value="0" />
+                                            <Setter Property="MinWidth" Value="0" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                </ListView>
+                                <Button Name="BallColorAddButton" Width="36" Height="36" Padding="0" Flyout="{StaticResource BallColorPickerFlyout}">
+                                    <SymbolIcon Symbol="Add"/>
+                                </Button>
+                            </StackPanel>
+                        </controls:HeaderedContentControl>
+                        <controls:HeaderedContentControl Header="Speed">
+                            <TextBox Name="SpeedTextBox" Width="50" Height="25"/>
+                        </controls:HeaderedContentControl>
+                        <controls:HeaderedContentControl Header="Size">
+                            <TextBox Name="SizeTextBox" Width="50" Height="25"/>
+                        </controls:HeaderedContentControl>
+                    </controls:WrapPanel>
+                </StackPanel>
+
+                <controls:WrapPanel Orientation="Horizontal" Margin="10" HorizontalSpacing="20" VerticalSpacing="20">
+                    <Button Name="ApplyButton" Content="Apply" Click="ApplyButton_Click"/>
+                    <Button Name="StartButton" Content="Restart" Click="StartButton_Click"/>
+                    <Button Name="StopButton" Content="Stop" Click="StopButton_Click"/>
+                    <Button Name="ResetButton" Content="Reset" Click="ResetButton_Click"/>
+                </controls:WrapPanel>
+            </StackPanel>
         </ScrollViewer>
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Content="Reset" Click="Button_Click"/>
-        </StackPanel>
+        <controls:InAppNotification x:Name="Notifier" />
     </Grid>
 </Page>
