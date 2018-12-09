@@ -31,6 +31,7 @@ namespace ProjectChaos
         private Random random = new Random();
         GridProperty gridProp;
         BallProperty ballProp;
+        List<InfluenceProperty> influenceProp = new List<InfluenceProperty>();
         ObservableCollection<SolidColorBrush> ballColorsItemSource = new ObservableCollection<SolidColorBrush>();
         private Timer timer;
 
@@ -49,6 +50,7 @@ namespace ProjectChaos
 
             gridProp = new GridProperty(noOfSplit: 10, maxValue: 100, cellSize: 50, refreshSpeed: 50);
             ballProp = new BallProperty(noOfBallsInColor: 50, colors: ballColorsItemSource.ToList(), speed: 5, size: 1);
+            influenceProp.Add(new InfluenceProperty(ballColor: new SolidColorBrush(Colors.Red), coordinate: new Point(50, 50), strength: 250));
 
             NoOfSplitTextBox.Text = "10";
             MaxvalueTextBox.Text = "100";
@@ -66,7 +68,6 @@ namespace ProjectChaos
                 GraphLinesGrid.Children.Clear();
                 XLableCanvas.Children.Clear();
                 YLableCanvas.Children.Clear();
-
 
                 for (int i = 0; i <= gridProp.NoOfSplit; i++)
                 {
@@ -120,11 +121,12 @@ namespace ProjectChaos
 
                 foreach (var child in BallsCanvas.Children.ToList())
                 {
-                    var direction = random.NextDouble() * 360;
-                    direction = Math.PI * direction / 180.0; // Degree to radian 
                     var ballTranslate = child.RenderTransform.TransformPoint(new Point(0, 0));
                     var x = ballTranslate.X;
                     var y = ballTranslate.Y;
+
+                    var direction = random.NextDouble() * 360;
+                    direction = Math.PI * direction / 180.0; // Degree to radian 
                     var x1 = x + (ballProp.Speed * Math.Cos(direction));
                     var y1 = y + (ballProp.Speed * Math.Sin(direction));
 
@@ -134,6 +136,13 @@ namespace ProjectChaos
                         direction = Math.PI * direction / 180.0; // Degree to radian 
                         x1 = x + (ballProp.Speed * Math.Cos(direction));
                         y1 = y + (ballProp.Speed * Math.Sin(direction));
+                    }
+
+                    foreach (var influencePoint in influenceProp.Where(parm => parm.BallColor.Color == ((child as Ellipse).Fill as SolidColorBrush).Color))
+                    {
+                        var distance = Distance(x, y, influencePoint.Coordinate.X, influencePoint.Coordinate.Y);
+
+                        
                     }
 
                     TranslateTransform myTranslate = new TranslateTransform();
@@ -236,6 +245,11 @@ namespace ProjectChaos
         private void cancelColor_Click(object sender, RoutedEventArgs e)
         {
             BallColorAddButton.Flyout.Hide();
+        }
+
+        public double Distance(double x1, double y1, double x2, double y2)
+        {
+            return Math.Sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
         }
     }
 }

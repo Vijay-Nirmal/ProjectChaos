@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="BallProperty.cs" />
     <Compile Include="GridProperty.cs" />
+    <Compile Include="InfluenceProperty.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
